@@ -123,6 +123,11 @@
                             <tag>${project.version}</tag>
                         </tags>
                     </to>
+                    <container>
+                        <ports>
+                            <port>8080</port>
+                        </ports>
+                    </container>
                 </configuration>
             </plugin>
         </plugins>
