@@ -1,12 +1,11 @@
 package com.athiramk.bookmark.api;
 
-import com.athiramk.bookmark.domain.Bookmark;
+import com.athiramk.bookmark.domain.model.BookmarkRequest;
+import com.athiramk.bookmark.domain.model.BookmarkResponse;
 import com.athiramk.bookmark.domain.BookmarkService;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
-
-import java.util.List;
+import com.athiramk.bookmark.domain.model.PagedResult;
+import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/bookmarks")
@@ -19,8 +18,18 @@ public class BookmarkController {
     }
 
     @GetMapping
-    public List<Bookmark> getBookmarks() {
-        return bookmarkService.getBookmarks();
+    public PagedResult<BookmarkResponse> getBookmarks(@RequestParam(name="page", defaultValue = "1")Integer page,
+                                                      @RequestParam(defaultValue = "") String query) {
+        if(query == null || query.trim().isEmpty()) {
+            return bookmarkService.getBookmarks(page);
+        }
+        return bookmarkService.searchBookmarks(query, page);
+    }
+
+    @PostMapping
+    @ResponseStatus(HttpStatus.CREATED)
+    public BookmarkResponse addBookmark(@RequestBody BookmarkRequest bookmarkRequest) {
+        return bookmarkService.addBookmark(bookmarkRequest);
     }
 
 }
