@@ -1,0 +1,26 @@
+# =========================================================================
+# STAGE 1: Extract layers using Spring Boot's modern tools engine
+# =========================================================================
+FROM eclipse-temurin:21.0.5_11-jre AS builder
+WORKDIR /application
+ARG JAR_FILE=target/*.jar
+COPY ${JAR_FILE} application.jar
+
+# Extracting into the designated 'extracted' space
+RUN java -Djarmode=tools -jar application.jar extract --layers --destination extracted
+
+# =========================================================================
+# STAGE 2: Copy the extracted components into the final runtime container
+# =========================================================================
+FROM eclipse-temurin:21.0.5_11-jre
+WORKDIR /application
+
+# Copy the modern flattened layers from Stage 1
+COPY --from=builder /application/extracted/dependencies/ ./
+COPY --from=builder /application/extracted/spring-boot-loader/ ./
+COPY --from=builder /application/extracted/snapshot-dependencies/ ./
+COPY --from=builder /application/extracted/application/ ./
+
+# Point to the extracted runtime dependencies and classes,
+# then run the app's compiled jar directly.
+ENTRYPOINT ["java", "-jar", "application.jar"]

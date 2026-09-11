@@ -18,7 +18,7 @@
         <java.version>21</java.version>
         <jib-maven-plugin.version>3.5.2</jib-maven-plugin.version>
         <dockerUserName>athiramk</dockerUserName>
-        <dockerImageName>${dockerUserName}/${project.artifactId}</dockerImageName>
+        <dockerImageName>docker.io/${dockerUserName}/${project.artifactId}</dockerImageName>
     </properties>
     <dependencies>
         <dependency>
@@ -107,6 +107,11 @@
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
+                <configuration>
+                    <image>
+                        <name>${dockerImageName}:${project.version}</name>
+                    </image>
+                </configuration>
             </plugin>
             <plugin>
                 <groupId>com.google.cloud.tools</groupId>
